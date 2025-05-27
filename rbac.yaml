@@ -10,7 +10,7 @@ metadata:
   namespace: expense
   name: pod-reader
 rules:
-- apiGroups: [""] # "" indicates the core API group .. v1 is the core version, like pods ,service,configmap etc
+- apiGroups: [""] # "" empty indicates the core API group .. v1 is the core version, like pods ,service,configmap etc
   resources: ["pods"]
   verbs: ["get", "watch", "list"]
 ---
@@ -41,7 +41,7 @@ metadata:
   namespace: expense
   name: expense-admin
 rules:
-- apiGroups: ["*"] # "" indicates the core API group
+- apiGroups: ["*"] # "*" indicates the everything inside expense namespace. kubernetes like deployment ,pods, services
   resources: ["*"]
   verbs: ["*"]
 ---
@@ -69,7 +69,7 @@ metadata:
   # "namespace" omitted since ClusterRoles are not namespaced
   name: expensexyz
 rules:
-- apiGroups: [""]
+- apiGroups: ["*"] #literally everything ; [""] means everything from v1 api-group
   resources: ["namespace", "persistentvolume", "nodes"]
   verbs: ["get", "watch", "list"]
 ---

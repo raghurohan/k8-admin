@@ -15,7 +15,7 @@ data:
       username: balaraju
       groups:
         - expense-trainee
-    - userarn: <arn of iam user>:user/balaraju
+    - userarn: <arn of iam user>:user/hithesha
       username: hithesha
       groups:
         - technical-lead
