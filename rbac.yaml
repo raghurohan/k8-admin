@@ -1,13 +1,7 @@
-#IAM user balaraju has been attached to a policy called describeEKS policy and linked to our cluster in aws console. what he can do is he can see the nodes and descibe nodes ; he can not create or delete nodes. he cant use kubectl commands at all ; aws has a client called eksctl which can be used to create and delete nodes. that doesnt mean he can use whole kubernetes.
-
-# addition stuff inside kubernetes , we need to create a role and rolebinding for balaraju to do something in the cluster.
-
-
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: expense
+  namespace: default
   name: pod-reader
 rules:
 - apiGroups: [""] # "" empty indicates the core API group .. v1 is the core version, like pods ,service,configmap etc
@@ -15,7 +9,7 @@ rules:
   verbs: ["get", "watch", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-# This role binding allows "balaraju" to read pods in the "expense" namespace.
+# This role binding allows "raghu" to read pods in the "expense" namespace.
 # You need to already have a Role named "pod-reader" in that namespace.
 kind: RoleBinding
 metadata:
@@ -23,67 +17,11 @@ metadata:
   namespace: default
 subjects:
 # You can specify more than one "subject" ; more than one user can be assigned to the same role
-- kind: User
-  name: balaraju # "name" is case sensitive
+- kind: Group
+  name: devops-group # "name" is case sensitive
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
   kind: Role #this must be Role or ClusterRole
   name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
----
-
-
-# this is the role and rolebinding for admin user who can do anything under the expense namespace; like create,delete,update pods,deployments,configmaps etc
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  namespace: expense
-  name: expense-admin
-rules:
-- apiGroups: ["*"] # "*" indicates the everything inside expense namespace. kubernetes like deployment ,pods, services
-  resources: ["*"]
-  verbs: ["*"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: expense-admin
-  namespace: expense
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: expense-admin
-subjects:
-- apiGroup: rbac.authorization.k8s.io
-  kind: User
-  name: ramesh
----
-
-
-
-# this is the role and rolebinding for technical lead user who can do anything under namespace level , pv level and node level; he cant delete cluster because he has only describe access to cluster ,
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  # "namespace" omitted since ClusterRoles are not namespaced
-  name: expensexyz
-rules:
-- apiGroups: ["*"] #literally everything ; [""] means everything from v1 api-group
-  resources: ["namespace", "persistentvolume", "nodes"]
-  verbs: ["get", "watch", "list"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-# This role binding allows "dave" to read secrets in the "development" namespace.
-# You need to already have a ClusterRole named "secret-reader".
-kind: RoleBinding
-metadata:
-  name: expense
-subjects:
-- kind: User
-  name: hithesha # Name is case sensitive
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: expensexyz
-  apiGroup: rbac.authorization.k8s.io 
