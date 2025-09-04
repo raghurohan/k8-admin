@@ -1,3 +1,5 @@
+#just attach a proper trust policy role or user arn with required permisions
+
 apiVersion: v1
 data:
   mapRoles: |
